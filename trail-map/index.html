@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trail Explorer — 49North Alaskan Adventures</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Header overlay -->
+  <div id="header">
+    <div class="logo">49North</div>
+    <button id="tour-btn">Take the Tour</button>
+  </div>
+
+  <!-- 3D Map -->
+  <div id="map"></div>
+
+  <!-- Trail Cards (bottom bar) -->
+  <div id="trail-cards"></div>
+
+  <!-- Trail Info Panel (right side) -->
+  <div id="info-panel"></div>
+
+  <!-- Elevation Profile (bottom overlay when trail selected) -->
+  <canvas id="elevation-profile"></canvas>
+
+  <!-- Tour overlay text -->
+  <div id="tour-overlay"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
