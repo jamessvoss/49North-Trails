@@ -130,7 +130,7 @@ map.on('load', () => {
     source: 'trails',
     filter: ['all',
       ['==', '$type', 'LineString'],
-      ['!=', ['get', 'type'], 'water-taxi']
+      ['!', ['==', ['get', 'type'], 'water-taxi']]
     ],
     paint: {
       'line-color': [
