@@ -192,6 +192,9 @@ map.on('load', () => {
     }
   });
 
+  // Build trail cards
+  buildTrailCards();
+
   // Hover interactions
   map.on('mousemove', 'trail-line', (e) => {
     map.getCanvas().style.cursor = 'pointer';
@@ -225,6 +228,28 @@ map.on('load', () => {
     }
   });
 });
+
+function buildTrailCards() {
+  const container = document.getElementById('trail-cards');
+  Object.entries(TRAILS).forEach(([id, trail]) => {
+    const card = document.createElement('div');
+    card.className = 'trail-card';
+    card.dataset.trailId = id;
+    card.style.setProperty('--trail-color', trail.color);
+    card.innerHTML = `
+      <img class="trail-card-image" src="images/${trail.image}" alt="${trail.name}" />
+      <div class="trail-card-body">
+        <div class="trail-card-name">${trail.name}</div>
+        <div class="trail-card-meta">
+          <span class="difficulty-badge" style="background:${trail.color}20;color:${trail.color}">${trail.difficulty}</span>
+          <span>${trail.distance}</span>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', () => selectTrail(id));
+    container.appendChild(card);
+  });
+}
 
 function selectTrail(trailId) {
   const trail = TRAILS[trailId];
