@@ -80,7 +80,7 @@ map.on('load', () => {
 
   map.setTerrain({
     source: 'terrain-dem',
-    exaggeration: 1.5
+    exaggeration: 1.2
   });
 
   // Sky layer (only if supported by this MapLibre version)
@@ -105,24 +105,7 @@ map.on('load', () => {
     data: 'trails.geojson'
   });
 
-  // Trail casing (dark outline for visibility)
-  map.addLayer({
-    id: 'trail-casing',
-    type: 'line',
-    source: 'trails',
-    filter: ['==', '$type', 'LineString'],
-    paint: {
-      'line-color': '#0f172a',
-      'line-width': 7,
-      'line-opacity': 0.4
-    },
-    layout: {
-      'line-cap': 'round',
-      'line-join': 'round'
-    }
-  });
-
-  // Trail line (colored per trail)
+  // Single trail line layer (colored per trail, with border via line-gap-width trick)
   map.addLayer({
     id: 'trail-line',
     type: 'line',
@@ -139,24 +122,8 @@ map.on('load', () => {
         '#ffffff'
       ],
       'line-width': 4,
-      'line-opacity': 0.9
-    },
-    layout: {
-      'line-cap': 'round',
-      'line-join': 'round'
-    }
-  });
-
-  // Trail highlight (white glow on hover/select)
-  map.addLayer({
-    id: 'trail-highlight',
-    type: 'line',
-    source: 'trails',
-    filter: ['==', 'name', ''],
-    paint: {
-      'line-color': '#ffffff',
-      'line-width': 8,
-      'line-opacity': 0.5
+      'line-opacity': 0.95,
+      'line-emissive-strength': 0.8
     },
     layout: {
       'line-cap': 'round',
@@ -221,19 +188,29 @@ map.on('load', () => {
     });
   }, 800);
 
-  // Hover interactions
+  // Hover interactions — widen the line on hover instead of separate highlight layer
+  let hoveredTrail = null;
+
   map.on('mousemove', 'trail-line', (e) => {
     map.getCanvas().style.cursor = 'pointer';
     if (e.features.length > 0 && !activeTrail) {
       const trailName = e.features[0].properties.name;
-      map.setFilter('trail-highlight', ['==', 'name', trailName]);
+      if (hoveredTrail !== trailName) {
+        hoveredTrail = trailName;
+        map.setPaintProperty('trail-line', 'line-width', [
+          'case',
+          ['==', ['get', 'name'], trailName], 7,
+          4
+        ]);
+      }
     }
   });
 
   map.on('mouseleave', 'trail-line', () => {
     map.getCanvas().style.cursor = '';
     if (!activeTrail) {
-      map.setFilter('trail-highlight', ['==', 'name', '']);
+      hoveredTrail = null;
+      map.setPaintProperty('trail-line', 'line-width', 4);
     }
   });
 
@@ -291,12 +268,7 @@ function selectTrail(trailId) {
   map.setPaintProperty('trail-line', 'line-opacity', [
     'case',
     ['==', ['get', 'name'], trail.name], 1,
-    0.25
-  ]);
-  map.setPaintProperty('trail-casing', 'line-opacity', [
-    'case',
-    ['==', ['get', 'name'], trail.name], 0.6,
-    0.1
+    0.3
   ]);
 
   // Fly to trail camera position
@@ -316,38 +288,19 @@ function selectTrail(trailId) {
 }
 
 function animateTrailPath(trailName) {
-  map.setFilter('trail-highlight', ['==', 'name', trailName]);
-  map.setPaintProperty('trail-highlight', 'line-opacity', 0.6);
-  map.setPaintProperty('trail-highlight', 'line-color', '#ffffff');
-  map.setPaintProperty('trail-highlight', 'line-width', 8);
-
-  let step = 0;
-  const dashLength = 2;
-  const gapLength = 100;
-
-  function animate() {
-    step += 0.5;
-    const progress = Math.min(step, gapLength);
-    map.setPaintProperty('trail-highlight', 'line-dasharray', [
-      dashLength,
-      gapLength - progress,
-      progress,
-      0
-    ]);
-    if (step < gapLength) {
-      requestAnimationFrame(animate);
-    }
-  }
-
-  animate();
+  // Widen the selected trail for emphasis
+  map.setPaintProperty('trail-line', 'line-width', [
+    'case',
+    ['==', ['get', 'name'], trailName], 6,
+    3
+  ]);
 }
 
 function deselectTrail() {
   activeTrail = null;
   document.querySelectorAll('.trail-card').forEach(c => c.classList.remove('active'));
-  map.setPaintProperty('trail-line', 'line-opacity', 0.9);
-  map.setPaintProperty('trail-casing', 'line-opacity', 0.4);
-  map.setFilter('trail-highlight', ['==', 'name', '']);
+  map.setPaintProperty('trail-line', 'line-opacity', 0.95);
+  map.setPaintProperty('trail-line', 'line-width', 4);
   hideInfoPanel();
   hideElevationProfile();
 }
