@@ -283,6 +283,10 @@ function selectTrail(trailId) {
 
   // Animate trail drawing
   animateTrailPath(trail.name);
+
+  // Show info panel and elevation profile
+  showInfoPanel(trailId);
+  showElevationProfile(trailId);
 }
 
 function animateTrailPath(trailName) {
@@ -328,6 +332,10 @@ function showInfoPanel(trailId) {
 
 function hideInfoPanel() {
   document.getElementById('info-panel').classList.remove('open');
+}
+
+function showElevationProfile(trailId) {
+  // Implemented in Task 7
 }
 
 function hideElevationProfile() {
