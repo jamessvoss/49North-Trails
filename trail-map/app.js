@@ -205,6 +205,11 @@ map.on('load', () => {
     map.once('moveend', () => {
       document.getElementById('trail-cards').classList.add('visible');
       document.getElementById('header').classList.add('visible');
+
+      // Show controls hint briefly after fly-in
+      const hint = document.getElementById('controls-hint');
+      hint.classList.add('visible');
+      setTimeout(() => hint.classList.add('fade-out'), 5000);
     });
   }, 800);
 
@@ -591,9 +596,27 @@ document.getElementById('tour-btn').addEventListener('click', () => {
   else startTour();
 });
 
-// Escape key stops tour
+// Escape key stops tour or deselects trail
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && tourActive) {
-    stopTour();
+  if (e.key === 'Escape') {
+    if (tourActive) stopTour();
+    else if (activeTrail) flyToOverview();
   }
 });
+
+// --- Overview / Reset ---
+
+function flyToOverview() {
+  deselectTrail();
+  map.flyTo({
+    center: [-151.20, 59.58],
+    zoom: 11.5,
+    pitch: 65,
+    bearing: 120,
+    speed: 0.8,
+    curve: 1.4,
+    essential: true
+  });
+}
+
+document.getElementById('overview-btn').addEventListener('click', flyToOverview);

@@ -36,6 +36,79 @@ body {
   letter-spacing: 0.02em;
 }
 
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.header-btn {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.header-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: scale(1.03);
+}
+
+.header-btn.tour {
+  background: rgba(37, 99, 235, 0.8);
+}
+
+.header-btn.tour:hover {
+  background: rgba(37, 99, 235, 1);
+}
+
+.header-btn.tour.active {
+  background: rgba(239, 68, 68, 0.8);
+}
+
+.header-btn.tour.active:hover {
+  background: rgba(239, 68, 68, 1);
+}
+
+/* Controls hint */
+#controls-hint {
+  position: fixed;
+  bottom: 200px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  padding: 10px 20px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 10px;
+  z-index: 6;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+
+#controls-hint.visible {
+  opacity: 1;
+}
+
+#controls-hint.fade-out {
+  opacity: 0;
+}
+
+#controls-hint span {
+  color: #94a3b8;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 /* Trail Cards */
 #trail-cards {
   position: fixed;
@@ -284,34 +357,6 @@ body {
   pointer-events: auto;
 }
 
-/* Tour Button */
-#tour-btn {
-  padding: 10px 20px;
-  background: rgba(37, 99, 235, 0.8);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #f8fafc;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
-}
-
-#tour-btn:hover {
-  background: rgba(37, 99, 235, 1);
-  transform: scale(1.03);
-}
-
-#tour-btn.active {
-  background: rgba(239, 68, 68, 0.8);
-}
-
-#tour-btn.active:hover {
-  background: rgba(239, 68, 68, 1);
-}
-
 /* Tour Overlay */
 #tour-overlay {
   position: fixed;
@@ -397,5 +442,14 @@ body {
 
   #tour-overlay {
     font-size: 24px;
+  }
+
+  #controls-hint {
+    gap: 10px;
+    padding: 8px 14px;
+  }
+
+  #controls-hint span {
+    font-size: 11px;
   }
 }
