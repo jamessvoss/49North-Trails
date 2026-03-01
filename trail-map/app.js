@@ -83,15 +83,21 @@ map.on('load', () => {
     exaggeration: 1.5
   });
 
-  map.addLayer({
-    id: 'sky',
-    type: 'sky',
-    paint: {
-      'sky-type': 'atmosphere',
-      'sky-atmosphere-sun': [0.0, 90.0],
-      'sky-atmosphere-sun-intensity': 15
+  // Sky layer (only if supported by this MapLibre version)
+  if (map.getStyle().layers && map.addLayer) {
+    try {
+      map.setSky({
+        'sky-color': '#87CEEB',
+        'sky-horizon-blend': 0.5,
+        'horizon-color': '#ffffff',
+        'horizon-fog-blend': 0.5,
+        'fog-color': '#dce6f0',
+        'fog-ground-blend': 0.8
+      });
+    } catch (e) {
+      // Sky not supported in this version, skip gracefully
     }
-  });
+  }
 
   // Trail GeoJSON source
   map.addSource('trails', {
