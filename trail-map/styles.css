@@ -260,6 +260,103 @@ body {
   background: #1d4ed8;
 }
 
+/* Elevation Profile */
+#elevation-profile {
+  position: fixed;
+  bottom: 200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 120px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  z-index: 6;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: 12px;
+}
+
+#elevation-profile.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Tour Button */
+#tour-btn {
+  padding: 10px 20px;
+  background: rgba(37, 99, 235, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+#tour-btn:hover {
+  background: rgba(37, 99, 235, 1);
+  transform: scale(1.03);
+}
+
+#tour-btn.active {
+  background: rgba(239, 68, 68, 0.8);
+}
+
+#tour-btn.active:hover {
+  background: rgba(239, 68, 68, 1);
+}
+
+/* Tour Overlay */
+#tour-overlay {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 700;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7), 0 0 40px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+  z-index: 20;
+  text-align: center;
+  letter-spacing: 0.01em;
+  max-width: 80vw;
+}
+
+#tour-overlay.visible {
+  opacity: 1;
+}
+
+/* Opening animation - fade in UI elements */
+#trail-cards, #header {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+#trail-cards.visible, #header.visible {
+  opacity: 1;
+}
+
+/* Bottom gradient for card readability */
+.bottom-gradient {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 4;
+}
+
 @media (max-width: 768px) {
   #trail-cards {
     left: 0;
@@ -290,5 +387,15 @@ body {
   }
   #info-panel.open {
     bottom: 0;
+  }
+
+  #elevation-profile {
+    width: calc(100% - 24px);
+    bottom: 210px;
+    height: 100px;
+  }
+
+  #tour-overlay {
+    font-size: 24px;
   }
 }

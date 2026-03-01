@@ -192,8 +192,28 @@ map.on('load', () => {
     }
   });
 
+  // Preload GeoJSON for elevation profiles
+  loadTrailGeoJSON();
+
   // Build trail cards
   buildTrailCards();
+
+  // Opening fly-in animation
+  setTimeout(() => {
+    map.flyTo({
+      center: [-151.20, 59.58],
+      zoom: 11.5,
+      pitch: 65,
+      bearing: 120,
+      speed: 0.4,
+      curve: 1.5,
+      essential: true
+    });
+    map.once('moveend', () => {
+      document.getElementById('trail-cards').classList.add('visible');
+      document.getElementById('header').classList.add('visible');
+    });
+  }, 800);
 
   // Hover interactions
   map.on('mousemove', 'trail-line', (e) => {
@@ -358,10 +378,235 @@ function hideInfoPanel() {
   document.getElementById('info-panel').classList.remove('open');
 }
 
+// --- Elevation Profile ---
+
+// Cache for GeoJSON data
+let trailGeoJSON = null;
+
+function loadTrailGeoJSON() {
+  return fetch('trails.geojson')
+    .then(r => r.json())
+    .then(data => { trailGeoJSON = data; return data; });
+}
+
+function getTrailCoordinates(trailName) {
+  if (!trailGeoJSON) return null;
+  const feature = trailGeoJSON.features.find(
+    f => f.geometry.type === 'LineString' && f.properties.name === trailName
+  );
+  return feature ? feature.geometry.coordinates : null;
+}
+
+function haversineDistance(coord1, coord2) {
+  const R = 6371000; // meters
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(coord2[1] - coord1[1]);
+  const dLon = toRad(coord2[0] - coord1[0]);
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(coord1[1])) * Math.cos(toRad(coord2[1])) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 function showElevationProfile(trailId) {
-  // Implemented in Task 7
+  const trail = TRAILS[trailId];
+  const coords = getTrailCoordinates(trail.name);
+  if (!coords || coords.length < 2) return;
+
+  const canvas = document.getElementById('elevation-profile');
+  const ctx = canvas.getContext('2d');
+
+  // Set canvas resolution
+  const dpr = window.devicePixelRatio || 1;
+  const displayW = canvas.clientWidth;
+  const displayH = canvas.clientHeight;
+  canvas.width = displayW * dpr;
+  canvas.height = displayH * dpr;
+  ctx.scale(dpr, dpr);
+
+  // Sample elevations from terrain DEM
+  const samples = [];
+  let cumulDist = 0;
+
+  for (let i = 0; i < coords.length; i++) {
+    if (i > 0) {
+      cumulDist += haversineDistance(coords[i - 1], coords[i]);
+    }
+    const elev = map.queryTerrainElevation({ lng: coords[i][0], lat: coords[i][1] });
+    if (elev != null) {
+      samples.push({ dist: cumulDist, elev: elev });
+    }
+  }
+
+  if (samples.length < 2) return;
+
+  const totalDist = samples[samples.length - 1].dist;
+  const minElev = Math.min(...samples.map(s => s.elev));
+  const maxElev = Math.max(...samples.map(s => s.elev));
+  const elevRange = maxElev - minElev || 1;
+
+  // Drawing area with margins for labels
+  const ml = 45, mr = 10, mt = 10, mb = 22;
+  const w = displayW - ml - mr;
+  const h = displayH - mt - mb;
+
+  ctx.clearRect(0, 0, displayW, displayH);
+
+  // Build path
+  const toX = d => ml + (d / totalDist) * w;
+  const toY = e => mt + h - ((e - minElev) / elevRange) * h;
+
+  // Gradient fill
+  const grad = ctx.createLinearGradient(0, mt, 0, mt + h);
+  grad.addColorStop(0, trail.color + '60');
+  grad.addColorStop(1, trail.color + '08');
+
+  ctx.beginPath();
+  ctx.moveTo(toX(samples[0].dist), mt + h);
+  samples.forEach(s => ctx.lineTo(toX(s.dist), toY(s.elev)));
+  ctx.lineTo(toX(samples[samples.length - 1].dist), mt + h);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line on top
+  ctx.beginPath();
+  samples.forEach((s, i) => {
+    const x = toX(s.dist);
+    const y = toY(s.elev);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = trail.color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Labels
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '10px -apple-system, sans-serif';
+
+  // Y-axis labels (elevation in ft)
+  ctx.textAlign = 'right';
+  ctx.fillText(Math.round(maxElev * 3.281) + ' ft', ml - 5, mt + 10);
+  ctx.fillText(Math.round(minElev * 3.281) + ' ft', ml - 5, mt + h);
+
+  // X-axis labels (distance in miles)
+  ctx.textAlign = 'left';
+  ctx.fillText('0 mi', ml, mt + h + 14);
+  ctx.textAlign = 'right';
+  ctx.fillText((totalDist / 1609.34).toFixed(1) + ' mi', ml + w, mt + h + 14);
+
+  canvas.classList.add('visible');
 }
 
 function hideElevationProfile() {
   document.getElementById('elevation-profile').classList.remove('visible');
 }
+
+// --- Auto-Tour Mode ---
+
+let tourActive = false;
+let tourAbortController = null;
+
+async function startTour() {
+  tourActive = true;
+  const btn = document.getElementById('tour-btn');
+  btn.textContent = 'Exit Tour';
+  btn.classList.add('active');
+
+  tourAbortController = new AbortController();
+  const signal = tourAbortController.signal;
+
+  const trailIds = Object.keys(TRAILS);
+
+  // Start with overview
+  deselectTrail();
+  map.flyTo({
+    center: [-151.20, 59.56],
+    zoom: 11,
+    pitch: 55,
+    bearing: 90,
+    speed: 0.6,
+    essential: true
+  });
+
+  await waitForIdle(signal);
+  await delay(2000, signal);
+
+  for (const id of trailIds) {
+    if (signal.aborted) break;
+
+    const trail = TRAILS[id];
+
+    // Show trail name overlay
+    showTourOverlay(trail.name);
+    await delay(1500, signal);
+
+    // Select and fly to trail
+    selectTrail(id);
+    await waitForIdle(signal);
+    await delay(4000, signal);
+
+    hideTourOverlay();
+    await delay(500, signal);
+  }
+
+  if (!signal.aborted) {
+    endTour();
+  }
+}
+
+function endTour() {
+  tourActive = false;
+  const btn = document.getElementById('tour-btn');
+  btn.textContent = 'Take the Tour';
+  btn.classList.remove('active');
+  tourAbortController = null;
+  hideTourOverlay();
+}
+
+function stopTour() {
+  if (tourAbortController) {
+    tourAbortController.abort();
+  }
+  endTour();
+}
+
+function waitForIdle(signal) {
+  return new Promise((resolve) => {
+    if (signal?.aborted) return resolve();
+    const onEnd = () => resolve();
+    const onAbort = () => { map.off('moveend', onEnd); resolve(); };
+    map.once('moveend', onEnd);
+    signal?.addEventListener('abort', onAbort, { once: true });
+  });
+}
+
+function delay(ms, signal) {
+  return new Promise((resolve) => {
+    if (signal?.aborted) return resolve();
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener('abort', () => { clearTimeout(timer); resolve(); }, { once: true });
+  });
+}
+
+function showTourOverlay(text) {
+  const el = document.getElementById('tour-overlay');
+  el.textContent = text;
+  el.classList.add('visible');
+}
+
+function hideTourOverlay() {
+  document.getElementById('tour-overlay').classList.remove('visible');
+}
+
+// Tour button handler
+document.getElementById('tour-btn').addEventListener('click', () => {
+  if (tourActive) stopTour();
+  else startTour();
+});
+
+// Escape key stops tour
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && tourActive) {
+    stopTour();
+  }
+});
