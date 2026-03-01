@@ -122,8 +122,7 @@ map.on('load', () => {
         '#ffffff'
       ],
       'line-width': 4,
-      'line-opacity': 0.95,
-      'line-emissive-strength': 0.8
+      'line-opacity': 0.95
     },
     layout: {
       'line-cap': 'round',
