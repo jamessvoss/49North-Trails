@@ -105,12 +105,33 @@ map.on('load', () => {
     data: 'trails.geojson'
   });
 
-  // Single trail line layer (colored per trail, with border via line-gap-width trick)
+  // Water taxi routes (dashed line, rendered first so trails draw on top)
+  map.addLayer({
+    id: 'water-taxi',
+    type: 'line',
+    source: 'trails',
+    filter: ['==', ['get', 'type'], 'water-taxi'],
+    paint: {
+      'line-color': '#38bdf8',
+      'line-width': 2.5,
+      'line-opacity': 0.7,
+      'line-dasharray': [4, 3]
+    },
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round'
+    }
+  });
+
+  // Hiking trail lines (colored per trail)
   map.addLayer({
     id: 'trail-line',
     type: 'line',
     source: 'trails',
-    filter: ['==', '$type', 'LineString'],
+    filter: ['all',
+      ['==', '$type', 'LineString'],
+      ['!=', ['get', 'type'], 'water-taxi']
+    ],
     paint: {
       'line-color': [
         'match', ['get', 'name'],
@@ -270,6 +291,13 @@ function selectTrail(trailId) {
     0.3
   ]);
 
+  // Show only the matching water taxi route
+  map.setPaintProperty('water-taxi', 'line-opacity', [
+    'case',
+    ['==', ['get', 'trail'], trail.name], 0.9,
+    0.15
+  ]);
+
   // Fly to trail camera position
   map.flyTo({
     ...trail.camera,
@@ -300,6 +328,7 @@ function deselectTrail() {
   document.querySelectorAll('.trail-card').forEach(c => c.classList.remove('active'));
   map.setPaintProperty('trail-line', 'line-opacity', 0.95);
   map.setPaintProperty('trail-line', 'line-width', 4);
+  map.setPaintProperty('water-taxi', 'line-opacity', 0.7);
   hideInfoPanel();
   hideElevationProfile();
 }

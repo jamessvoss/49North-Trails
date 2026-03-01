@@ -535,7 +535,7 @@
       "type": "Feature",
       "properties": {
         "name": "Alpine Ridge Trail",
-        "distance_miles": 2.0,
+        "distance_miles": 2,
         "distance_note": "round trip; much longer with approach",
         "difficulty": "moderate-strenuous",
         "trailhead": "Halibut Cove area (accessed via Saddle Trail)",
@@ -973,7 +973,7 @@
       "type": "Feature",
       "properties": {
         "name": "Saddle Trail",
-        "distance_miles": 2.0,
+        "distance_miles": 2,
         "distance_note": "one way, connects Grewingk Lake Trail to Alpine Ridge Trail",
         "difficulty": "moderate",
         "description": "Connector trail from the Grewingk Lake Trail to the saddle where Alpine Ridge Trail begins. Gains elevation through forest.",
@@ -1879,6 +1879,202 @@
         "coordinates": [
           -151.125,
           59.498
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Water Taxi to Glacier Spit",
+        "type": "water-taxi",
+        "trail": "Grewingk Glacier Lake Trail"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -151.4083,
+            59.6013
+          ],
+          [
+            -151.38,
+            59.598
+          ],
+          [
+            -151.34,
+            59.596
+          ],
+          [
+            -151.3,
+            59.594
+          ],
+          [
+            -151.26,
+            59.593
+          ],
+          [
+            -151.22,
+            59.595
+          ],
+          [
+            -151.18,
+            59.6
+          ],
+          [
+            -151.16,
+            59.604
+          ],
+          [
+            -151.1394,
+            59.608
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Water Taxi to Halibut Cove",
+        "type": "water-taxi",
+        "trail": "Alpine Ridge Trail"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -151.4083,
+            59.6013
+          ],
+          [
+            -151.38,
+            59.598
+          ],
+          [
+            -151.34,
+            59.596
+          ],
+          [
+            -151.3,
+            59.594
+          ],
+          [
+            -151.26,
+            59.593
+          ],
+          [
+            -151.22,
+            59.595
+          ],
+          [
+            -151.19,
+            59.598
+          ],
+          [
+            -151.164,
+            59.6013
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Water Taxi to Halibut Cove Lagoon",
+        "type": "water-taxi",
+        "trail": "China Poot Lake Trail"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -151.4083,
+            59.6013
+          ],
+          [
+            -151.38,
+            59.598
+          ],
+          [
+            -151.34,
+            59.594
+          ],
+          [
+            -151.3,
+            59.588
+          ],
+          [
+            -151.27,
+            59.578
+          ],
+          [
+            -151.24,
+            59.565
+          ],
+          [
+            -151.22,
+            59.552
+          ],
+          [
+            -151.2,
+            59.542
+          ],
+          [
+            -151.1901,
+            59.536
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Water Taxi to Kayak Beach",
+        "type": "water-taxi",
+        "trail": "Grace Ridge Trail"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -151.4083,
+            59.6013
+          ],
+          [
+            -151.38,
+            59.598
+          ],
+          [
+            -151.34,
+            59.59
+          ],
+          [
+            -151.3,
+            59.578
+          ],
+          [
+            -151.26,
+            59.562
+          ],
+          [
+            -151.22,
+            59.545
+          ],
+          [
+            -151.18,
+            59.525
+          ],
+          [
+            -151.15,
+            59.51
+          ],
+          [
+            -151.135,
+            59.502
+          ],
+          [
+            -151.125,
+            59.498
+          ]
         ]
       }
     }
