@@ -327,7 +327,31 @@ function deselectTrail() {
 }
 
 function showInfoPanel(trailId) {
-  // Implemented in Task 6
+  const trail = TRAILS[trailId];
+  const panel = document.getElementById('info-panel');
+
+  panel.innerHTML = `
+    <button class="panel-close" onclick="deselectTrail()">&times;</button>
+    <img class="panel-image" src="images/${trail.image}" alt="${trail.name}" />
+    <div class="panel-content" style="--trail-color:${trail.color}">
+      <h2>${trail.name}</h2>
+      <span class="difficulty-badge" style="background:${trail.color}20;color:${trail.color}">${trail.difficulty}</span>
+      <div class="panel-stats">
+        <div class="stat"><span class="stat-value">${trail.distance}</span><span class="stat-label">Distance</span></div>
+        <div class="stat"><span class="stat-value">${trail.elevation}</span><span class="stat-label">Elevation</span></div>
+        <div class="stat"><span class="stat-value">${trail.time}</span><span class="stat-label">Time</span></div>
+        <div class="stat"><span class="stat-value">${trail.dropoff}</span><span class="stat-label">Water Taxi</span></div>
+      </div>
+      <p class="panel-description">${trail.description}</p>
+      <div class="panel-highlights">
+        <h3>Highlights</h3>
+        <ul>${trail.highlights.map(h => `<li>${h}</li>`).join('')}</ul>
+      </div>
+      <a href="https://49northalaskanadventures.com" class="panel-cta" target="_blank">Book This Adventure</a>
+    </div>
+  `;
+
+  requestAnimationFrame(() => panel.classList.add('open'));
 }
 
 function hideInfoPanel() {
