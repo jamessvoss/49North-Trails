@@ -3,9 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <base href="/trails/" />
   <title>Trail Explorer — 49North Alaskan Adventures</title>
-  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
-  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -18,12 +19,12 @@
     </div>
   </div>
 
-  <!-- Map controls hint -->
-  <div id="controls-hint">
-    <span>Scroll to zoom</span>
-    <span>Drag to pan</span>
-    <span>Right-drag to rotate</span>
-    <span>Ctrl+drag to tilt</span>
+  <!-- Map controls legend -->
+  <div id="controls-legend">
+    <div class="legend-row"><kbd>Scroll</kbd> Zoom</div>
+    <div class="legend-row"><kbd>Drag</kbd> Pan</div>
+    <div class="legend-row"><kbd>Right-drag</kbd> Rotate</div>
+    <div class="legend-row"><kbd>Ctrl+drag</kbd> Tilt</div>
   </div>
 
   <!-- 3D Map -->

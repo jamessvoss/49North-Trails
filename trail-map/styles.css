@@ -12,6 +12,7 @@ body {
 #map {
   width: 100vw;
   height: 100vh;
+  background: #0f172a;
 }
 
 #header {
@@ -76,37 +77,42 @@ body {
   background: rgba(239, 68, 68, 1);
 }
 
-/* Controls hint */
-#controls-hint {
+/* Controls legend */
+#controls-legend {
   position: fixed;
-  bottom: 200px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 24px;
+  left: 24px;
   display: flex;
-  gap: 16px;
-  padding: 10px 20px;
-  background: rgba(15, 23, 42, 0.75);
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  background: rgba(15, 23, 42, 0.7);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border-radius: 10px;
+  border-radius: 8px;
   z-index: 6;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-  pointer-events: none;
 }
 
-#controls-hint.visible {
-  opacity: 1;
-}
-
-#controls-hint.fade-out {
-  opacity: 0;
-}
-
-#controls-hint span {
+.legend-row {
   color: #94a3b8;
-  font-size: 12px;
+  font-size: 11px;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-row kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 10px;
+  color: #cbd5e1;
+  min-width: 32px;
+  text-align: center;
 }
 
 /* Trail Cards */
@@ -444,12 +450,7 @@ body {
     font-size: 24px;
   }
 
-  #controls-hint {
-    gap: 10px;
-    padding: 8px 14px;
-  }
-
-  #controls-hint span {
-    font-size: 11px;
+  #controls-legend {
+    display: none;
   }
 }

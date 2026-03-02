@@ -112,38 +112,44 @@ const map = new maplibregl.Map({
   pitch: 45,
   bearing: 90,
   maxPitch: 85,
-  antialias: true
+  failIfMajorPerformanceCaveat: false
 });
 
 map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
+map.on('error', (e) => {
+  console.error('Map error:', e.error || e);
+});
+
 map.on('load', () => {
   // Terrain DEM source
-  map.addSource('terrain-dem', {
-    type: 'raster-dem',
-    url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${MAPTILER_KEY}`,
-    tileSize: 256
-  });
+  try {
+    map.addSource('terrain-dem', {
+      type: 'raster-dem',
+      url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${MAPTILER_KEY}`,
+      tileSize: 256
+    });
 
-  map.setTerrain({
-    source: 'terrain-dem',
-    exaggeration: 1.2
-  });
+    map.setTerrain({
+      source: 'terrain-dem',
+      exaggeration: 1.2
+    });
+  } catch (e) {
+    console.warn('Terrain not supported:', e);
+  }
 
-  // Sky layer (only if supported by this MapLibre version)
-  if (map.getStyle().layers && map.addLayer) {
-    try {
-      map.setSky({
-        'sky-color': '#87CEEB',
-        'sky-horizon-blend': 0.5,
-        'horizon-color': '#ffffff',
-        'horizon-fog-blend': 0.5,
-        'fog-color': '#dce6f0',
-        'fog-ground-blend': 0.8
-      });
-    } catch (e) {
-      // Sky not supported in this version, skip gracefully
-    }
+  // Sky layer
+  try {
+    map.setSky({
+      'sky-color': '#87CEEB',
+      'sky-horizon-blend': 0.5,
+      'horizon-color': '#ffffff',
+      'horizon-fog-blend': 0.5,
+      'fog-color': '#dce6f0',
+      'fog-ground-blend': 0.8
+    });
+  } catch (e) {
+    // Sky not supported, skip
   }
 
   // Trail GeoJSON source
@@ -291,6 +297,14 @@ map.on('load', () => {
   buildTrailCards();
 
   // Opening fly-in animation
+  function showUI() {
+    document.getElementById('trail-cards').classList.add('visible');
+    document.getElementById('header').classList.add('visible');
+  }
+
+  // Fallback: show UI after 5s regardless of fly-in completion
+  const uiFallback = setTimeout(showUI, 5000);
+
   setTimeout(() => {
     map.flyTo({
       center: [-151.30, 59.54],
@@ -302,13 +316,8 @@ map.on('load', () => {
       essential: true
     });
     map.once('moveend', () => {
-      document.getElementById('trail-cards').classList.add('visible');
-      document.getElementById('header').classList.add('visible');
-
-      // Show controls hint briefly after fly-in
-      const hint = document.getElementById('controls-hint');
-      hint.classList.add('visible');
-      setTimeout(() => hint.classList.add('fade-out'), 5000);
+      clearTimeout(uiFallback);
+      showUI();
     });
   }, 800);
 
