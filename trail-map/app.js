@@ -4,15 +4,17 @@ const TRAILS = {
   'grewingk-glacier': {
     name: 'Grewingk Glacier Lake Trail',
     color: '#3b82f6',
-    distance: '6.6 mi round trip',
-    elevation: '500 ft',
-    time: '3-5 hours',
-    difficulty: 'Easy to Moderate',
-    description: 'The most popular trail in Kachemak Bay State Park. Hike through coastal spruce forest to a stunning glacial lake with floating electric-blue icebergs at the foot of Grewingk Glacier. Includes a hand-operated cable tram river crossing.',
-    highlights: ['Glacial lake with icebergs', 'Hand-operated cable tram', 'Old-growth spruce forest', 'Optional Blue Ice Trail spur'],
+    distance: '9.3 mi through-hike',
+    elevation: '1,269 ft',
+    time: '4-6 hours',
+    difficulty: 'Moderate',
+    description: 'The most popular trail in Kachemak Bay State Park. Drop off at Glacier Spit and hike through coastal spruce forest to a stunning glacial lake with floating electric-blue icebergs. Cross Grewingk Creek via the famous hand-operated cable tram, then return via the Saddle Trail to your water taxi pickup.',
+    highlights: ['Glacial lake with icebergs', 'Hand-operated cable tram', 'Saddle Trail ridge views', 'Old-growth spruce forest'],
     dropoff: 'Glacier Spit',
+    pickup: 'Saddle Trailhead',
+    relatedTrails: ['Saddle Trail'],
     image: 'grewingk-glacier.webp',
-    camera: { center: [-151.17, 59.615], zoom: 13, pitch: 65, bearing: 200 }
+    camera: { center: [-151.17, 59.612], zoom: 13, pitch: 65, bearing: 200 }
   },
   'grace-ridge': {
     name: 'Grace Ridge Trail',
@@ -23,14 +25,15 @@ const TRAILS = {
     difficulty: 'Moderate to Difficult',
     description: 'A spectacular ridge hike climbing from sea level through old-growth spruce forest to expansive alpine meadows above 3,000 feet. 360-degree panoramic views of Cook Inlet volcanoes, glaciers, fjords, and islands.',
     highlights: ['360\u00b0 volcano panoramas', 'Alpine meadows & wildflowers', 'Mountain goat sightings', 'Old-growth spruce forest'],
-    dropoff: 'Kayak Beach',
+    dropoff: 'South Grace Ridge',
+    pickup: 'Kayak Beach',
     image: 'grace-ridge.webp',
-    camera: { center: [-151.15, 59.48], zoom: 13, pitch: 60, bearing: 45 }
+    camera: { center: [-151.42, 59.48], zoom: 12.5, pitch: 60, bearing: 160 }
   },
   'china-poot-lake': {
     name: 'China Poot Lake Trail',
     color: '#22c55e',
-    distance: '2.6 mi one-way',
+    distance: '2.8 mi one-way',
     elevation: '500 ft',
     time: '1.5-2 hours',
     difficulty: 'Moderate',
@@ -49,7 +52,8 @@ const TRAILS = {
     difficulty: 'Moderate to Difficult',
     description: 'The quickest route to alpine terrain in the park. Steeply ascends a ridge through spruce and alder, breaking into open tundra with sweeping views of Grewingk Glacier and Kachemak Bay.',
     highlights: ['Fastest route to alpine', 'Grewingk Glacier views', 'Open alpine tundra', 'Connects to Sadie Knob'],
-    dropoff: 'Halibut Cove',
+    dropoff: 'Saddle Trailhead',
+    waterTaxiTrail: 'Grewingk Glacier Lake Trail',
     image: 'alpine-ridge.webp',
     camera: { center: [-151.155, 59.59], zoom: 14, pitch: 65, bearing: 130 }
   }
@@ -123,6 +127,27 @@ map.on('load', () => {
     }
   });
 
+  // Water taxi labels (distance & time)
+  map.addLayer({
+    id: 'water-taxi-labels',
+    type: 'symbol',
+    source: 'trails',
+    filter: ['==', ['get', 'type'], 'water-taxi'],
+    layout: {
+      'symbol-placement': 'line-center',
+      'text-field': ['get', 'label'],
+      'text-size': 11,
+      'text-font': ['Noto Sans Bold'],
+      'text-offset': [0, -1],
+      'text-allow-overlap': false
+    },
+    paint: {
+      'text-color': '#7dd3fc',
+      'text-halo-color': 'rgba(15, 23, 42, 0.9)',
+      'text-halo-width': 1.5
+    }
+  });
+
   // Hiking trail lines (colored per trail)
   map.addLayer({
     id: 'trail-line',
@@ -140,6 +165,8 @@ map.on('load', () => {
         'China Poot Lake Trail', '#22c55e',
         'Alpine Ridge Trail', '#f97316',
         'Saddle Trail', '#a855f7',
+        'Sadie Knob Trail', '#ec4899',
+        'Coalition Loop Trail', '#14b8a6',
         '#ffffff'
       ],
       'line-width': 4,
@@ -148,6 +175,32 @@ map.on('load', () => {
     layout: {
       'line-cap': 'round',
       'line-join': 'round'
+    }
+  });
+
+  // Trail line labels (name & distance along the line)
+  map.addLayer({
+    id: 'trail-line-labels',
+    type: 'symbol',
+    source: 'trails',
+    filter: ['all',
+      ['==', '$type', 'LineString'],
+      ['!has', 'type']
+    ],
+    layout: {
+      'symbol-placement': 'line',
+      'text-field': ['get', 'label'],
+      'text-size': 14,
+      'text-font': ['Noto Sans Bold'],
+      'text-offset': [0, -0.8],
+      'text-allow-overlap': false,
+      'text-max-angle': 45,
+      'symbol-spacing': 250
+    },
+    paint: {
+      'text-color': '#f8fafc',
+      'text-halo-color': 'rgba(15, 23, 42, 0.9)',
+      'text-halo-width': 2
     }
   });
 
@@ -194,10 +247,10 @@ map.on('load', () => {
   // Opening fly-in animation
   setTimeout(() => {
     map.flyTo({
-      center: [-151.20, 59.58],
-      zoom: 11.5,
-      pitch: 65,
-      bearing: 120,
+      center: [-151.30, 59.54],
+      zoom: 10.5,
+      pitch: 55,
+      bearing: 100,
       speed: 0.4,
       curve: 1.5,
       essential: true
@@ -248,11 +301,23 @@ map.on('load', () => {
     }
   });
 
-  // Click empty map area to deselect
+  // Click empty map area — show coordinates or deselect
+  let coordPopup = null;
   map.on('click', (e) => {
     const features = map.queryRenderedFeatures(e.point, { layers: ['trail-line'] });
-    if (features.length === 0 && activeTrail) {
-      deselectTrail();
+    if (features.length === 0) {
+      if (activeTrail) {
+        deselectTrail();
+      }
+      // Show coordinate popup
+      const lat = e.lngLat.lat.toFixed(6);
+      const lng = e.lngLat.lng.toFixed(6);
+      const text = `${lat}, ${lng}`;
+      if (coordPopup) coordPopup.remove();
+      coordPopup = new maplibregl.Popup({ closeOnClick: true, maxWidth: 'none' })
+        .setLngLat(e.lngLat)
+        .setHTML(`<div style="cursor:pointer;font:13px monospace;padding:2px" onclick="navigator.clipboard.writeText('${text}');this.textContent='Copied!';setTimeout(()=>this.textContent='${text}',1000)">${text}</div>`)
+        .addTo(map);
     }
   });
 });
@@ -289,17 +354,23 @@ function selectTrail(trailId) {
     card.classList.toggle('active', card.dataset.trailId === trailId);
   });
 
-  // Dim other trails, brighten selected
+  // Dim other trails, brighten selected (include related trails)
+  const activeNames = [trail.name, ...(trail.relatedTrails || [])];
+  const nameMatchExpr = activeNames.length === 1
+    ? ['==', ['get', 'name'], activeNames[0]]
+    : ['any', ...activeNames.map(n => ['==', ['get', 'name'], n])];
+
   map.setPaintProperty('trail-line', 'line-opacity', [
     'case',
-    ['==', ['get', 'name'], trail.name], 1,
+    nameMatchExpr, 1,
     0.3
   ]);
 
   // Show only the matching water taxi route
+  const taxiMatchName = trail.waterTaxiTrail || trail.name;
   map.setPaintProperty('water-taxi', 'line-opacity', [
     'case',
-    ['==', ['get', 'trail'], trail.name], 0.9,
+    ['==', ['get', 'trail'], taxiMatchName], 0.9,
     0.15
   ]);
 
@@ -312,18 +383,23 @@ function selectTrail(trailId) {
   });
 
   // Animate trail drawing
-  animateTrailPath(trail.name);
+  animateTrailPath(trailId);
 
   // Show info panel and elevation profile
   showInfoPanel(trailId);
   showElevationProfile(trailId);
 }
 
-function animateTrailPath(trailName) {
-  // Widen the selected trail for emphasis
+function animateTrailPath(trailId) {
+  const trail = TRAILS[trailId];
+  const activeNames = [trail.name, ...(trail.relatedTrails || [])];
+  const nameMatchExpr = activeNames.length === 1
+    ? ['==', ['get', 'name'], activeNames[0]]
+    : ['any', ...activeNames.map(n => ['==', ['get', 'name'], n])];
+
   map.setPaintProperty('trail-line', 'line-width', [
     'case',
-    ['==', ['get', 'name'], trailName], 6,
+    nameMatchExpr, 6,
     3
   ]);
 }
@@ -352,7 +428,8 @@ function showInfoPanel(trailId) {
         <div class="stat"><span class="stat-value">${trail.distance}</span><span class="stat-label">Distance</span></div>
         <div class="stat"><span class="stat-value">${trail.elevation}</span><span class="stat-label">Elevation</span></div>
         <div class="stat"><span class="stat-value">${trail.time}</span><span class="stat-label">Time</span></div>
-        <div class="stat"><span class="stat-value">${trail.dropoff}</span><span class="stat-label">Water Taxi</span></div>
+        <div class="stat"><span class="stat-value">${trail.dropoff}</span><span class="stat-label">${trail.pickup ? 'Drop-off' : 'Water Taxi'}</span></div>
+        ${trail.pickup ? `<div class="stat"><span class="stat-value">${trail.pickup}</span><span class="stat-label">Pick-up</span></div>` : ''}
       </div>
       <p class="panel-description">${trail.description}</p>
       <div class="panel-highlights">
@@ -512,10 +589,10 @@ async function startTour() {
   // Start with overview
   deselectTrail();
   map.flyTo({
-    center: [-151.20, 59.56],
-    zoom: 11,
+    center: [-151.30, 59.54],
+    zoom: 10.5,
     pitch: 55,
-    bearing: 90,
+    bearing: 100,
     speed: 0.6,
     essential: true
   });
@@ -609,10 +686,10 @@ document.addEventListener('keydown', (e) => {
 function flyToOverview() {
   deselectTrail();
   map.flyTo({
-    center: [-151.20, 59.58],
-    zoom: 11.5,
-    pitch: 65,
-    bearing: 120,
+    center: [-151.30, 59.54],
+    zoom: 10.5,
+    pitch: 55,
+    bearing: 100,
     speed: 0.8,
     curve: 1.4,
     essential: true
