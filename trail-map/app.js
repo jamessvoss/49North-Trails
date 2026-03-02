@@ -56,6 +56,49 @@ const TRAILS = {
     waterTaxiTrail: 'Grewingk Glacier Lake Trail',
     image: 'alpine-ridge.webp',
     camera: { center: [-151.155, 59.59], zoom: 14, pitch: 65, bearing: 130 }
+  },
+  'emerald-lake': {
+    name: 'Emerald Lake Trail',
+    color: '#eab308',
+    distance: '9.0 mi one-way',
+    elevation: '2,000 ft',
+    time: '5-7 hours',
+    difficulty: 'Moderate to Difficult',
+    description: 'Cross Grewingk Creek via the famous hand-operated cable tram, then follow the lakeshore before climbing a stunning alpine ridge with panoramic views. The trail traverses high alpine terrain above 2,000 feet before descending to the Humpy Creek Trailhead.',
+    highlights: ['Hand-operated cable tram crossing', 'Grewingk Glacier Lake shoreline', 'High alpine ridge traverse', 'Panoramic views of Kachemak Bay'],
+    dropoff: 'Glacier Spit',
+    waterTaxiTrail: 'Grewingk Glacier Lake Trail',
+    image: 'grewingk-glacier.webp',
+    camera: { center: [-151.14, 59.64], zoom: 12.5, pitch: 60, bearing: 180 }
+  },
+  'tutka-lake': {
+    name: 'Tutka Lake Trail',
+    color: '#06b6d4',
+    distance: '1.6 mi one-way',
+    elevation: '400 ft',
+    time: '1-1.5 hours',
+    difficulty: 'Easy to Moderate',
+    description: 'A scenic trail through old-growth forest leading to the pristine Tutka Lakes. The trail follows Tutka Creek through lush vegetation with opportunities to spot wildlife and enjoy peaceful lakeside views.',
+    highlights: ['Pristine alpine lakes', 'Old-growth forest', 'Tutka Creek views', 'Wildlife viewing'],
+    dropoff: 'Tutka Lake Trailhead',
+    relatedTrails: ['Tutka Bay Lagoon Trail'],
+    image: 'grewingk-glacier.webp',
+    camera: { center: [-151.39, 59.435], zoom: 14, pitch: 60, bearing: 160 }
+  },
+  'tutka-lagoon': {
+    name: 'Tutka Bay Lagoon Trail',
+    color: '#84cc16',
+    distance: '3.1 mi one-way',
+    elevation: '200 ft',
+    time: '1.5-2.5 hours',
+    difficulty: 'Easy',
+    description: 'A gentle coastal trail along the shores of Tutka Bay Lagoon, one of the most scenic bays in Kachemak Bay State Park. Passes through meadows and old-growth spruce with views of the lagoon and surrounding peaks.',
+    highlights: ['Tutka Bay Lagoon views', 'Coastal meadows', 'Tidal flats & marine life', 'Tutka Bay Lodge area'],
+    dropoff: 'Tutka Bay Lagoon',
+    waterTaxiTrail: 'Tutka Lake Trail',
+    relatedTrails: ['Tutka Lake Trail'],
+    image: 'grewingk-glacier.webp',
+    camera: { center: [-151.45, 59.44], zoom: 14, pitch: 60, bearing: 120 }
   }
 };
 
@@ -167,6 +210,9 @@ map.on('load', () => {
         'Saddle Trail', '#a855f7',
         'Sadie Knob Trail', '#ec4899',
         'Coalition Loop Trail', '#14b8a6',
+        'Emerald Lake Trail', '#eab308',
+        'Tutka Lake Trail', '#06b6d4',
+        'Tutka Bay Lagoon Trail', '#84cc16',
         '#ffffff'
       ],
       'line-width': 4,
