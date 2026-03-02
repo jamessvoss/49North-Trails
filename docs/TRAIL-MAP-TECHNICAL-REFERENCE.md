@@ -43,8 +43,8 @@ User loads page
 ```
 
 The app has two main data structures:
-- **`TRAILS` object** in `app.js` — metadata for the 4 "featured" trails (cards + info panels)
-- **`trails.geojson`** — all geographic data (7 hiking trails, 8 water taxi routes, 10 points)
+- **`TRAILS` object** in `app.js` — metadata for the 7 "featured" trails (cards + info panels)
+- **`trails.geojson`** — all geographic data (10 hiking trails, 9 water taxi routes, 12 points)
 
 Not every trail in the GeoJSON has a TRAILS entry. Trails without a TRAILS entry still render on the map with colored lines and labels but don't have cards or info panels.
 
@@ -78,7 +78,7 @@ Not every trail in the GeoJSON has a TRAILS entry. Trails without a TRAILS entry
 
 | Dependency | Version | CDN | Purpose |
 |---|---|---|---|
-| MapLibre GL JS | 4.7.1 | `unpkg.com/maplibre-gl@4.7.1` | 3D map rendering, terrain, layers |
+| MapLibre GL JS | 4.7.1 | `cdn.jsdelivr.net/npm/maplibre-gl@4.7.1` | 3D map rendering, terrain, layers |
 | MapTiler | — | API tiles | Satellite imagery + terrain DEM |
 
 **MapTiler API Key:** `oenkzVJP4AUZcYIsm5xG`
@@ -104,6 +104,7 @@ zoom: 10
 pitch: 45
 bearing: 90
 maxPitch: 85
+failIfMajorPerformanceCaveat: false   // Allow WebGL on low-end mobile GPUs
 
 // Overview position (after fly-in, "All Trails" button, tour start)
 center: [-151.30, 59.54]
@@ -111,13 +112,15 @@ zoom: 10.5
 pitch: 55
 bearing: 100
 
-// Terrain
+// Terrain (wrapped in try/catch for mobile fallback)
 source: 'terrain-rgb-v2'
 exaggeration: 1.2
 
 // Sky
 sky-color: '#87CEEB'
 ```
+
+**Mobile resilience:** Terrain setup is wrapped in `try/catch` so the map still works if 3D terrain fails on low-end devices. A fallback timer shows UI elements after 5 seconds even if the fly-in `moveend` never fires.
 
 ---
 
@@ -180,7 +183,7 @@ All geographic data lives in `trails.geojson`. Three feature types:
 
 ## Trail Registry (TRAILS config)
 
-The `TRAILS` object in `app.js` defines the 4 **featured** trails that get bottom cards and info panels. Not all trails on the map have entries here.
+The `TRAILS` object in `app.js` defines the 7 **featured** trails that get bottom cards and info panels. Not all trails on the map have entries here.
 
 ```javascript
 const TRAILS = {
@@ -216,11 +219,14 @@ const TRAILS = {
 | `grace-ridge` | Grace Ridge Trail | `#ef4444` (red) | South Grace Ridge | Kayak Beach |
 | `china-poot-lake` | China Poot Lake Trail | `#22c55e` (green) | Halibut Cove Lagoon | — |
 | `alpine-ridge` | Alpine Ridge Trail | `#f97316` (orange) | Saddle Trailhead | — |
+| `emerald-lake` | Emerald Lake Trail | `#eab308` (yellow) | Glacier Spit | — |
+| `tutka-lake` | Tutka Lake Trail | `#06b6d4` (cyan) | Tutka Lake Trailhead | — |
+| `tutka-lagoon` | Tutka Bay Lagoon Trail | `#84cc16` (lime) | Tutka Bay Lagoon | — |
 
 ### Special Properties
 
-- **`relatedTrails`**: When this trail is selected, related trails also stay bright (not dimmed). Used for Grewingk + Saddle Trail combo.
-- **`waterTaxiTrail`**: If this trail shares a water taxi route with another trail. Alpine Ridge uses Grewingk's taxi route to Saddle Trailhead.
+- **`relatedTrails`**: When this trail is selected, related trails also stay bright (not dimmed). Used for Grewingk + Saddle Trail, and Tutka Lake + Tutka Bay Lagoon combos.
+- **`waterTaxiTrail`**: If this trail shares a water taxi route with another trail. Alpine Ridge and Emerald Lake use Grewingk's taxi route. Tutka Bay Lagoon uses Tutka Lake's taxi route.
 - **`pickup`**: If present, the info panel shows both "Drop-off" and "Pick-up" labels. If absent, shows "Water Taxi" label.
 
 ---
@@ -265,6 +271,9 @@ Colors are defined in TWO places that must stay in sync:
 | Saddle Trail | `#a855f7` | purple-500 |
 | Sadie Knob Trail | `#ec4899` | pink-500 |
 | Coalition Loop Trail | `#14b8a6` | teal-500 |
+| Emerald Lake Trail | `#eab308` | yellow-500 |
+| Tutka Lake Trail | `#06b6d4` | cyan-500 |
+| Tutka Bay Lagoon Trail | `#84cc16` | lime-500 |
 
 **To add a new trail color:** Update the `match` expression in the `trail-line` layer paint property. Add a new `'Trail Name', '#hexcolor'` pair before the fallback `'#ffffff'`.
 
@@ -272,32 +281,38 @@ Colors are defined in TWO places that must stay in sync:
 
 ## All GeoJSON Features
 
-### Hiking Trails (7)
+### Hiking Trails (10)
 
-| Trail | GPS Distance | Points | Start → End |
+| Trail | GPS Distance | Points | Data Source |
 |---|---|---|---|
-| Grewingk Glacier Lake Trail | 3.1 mi | 123 | `[-151.197, 59.622]` → `[-151.139, 59.608]` |
-| Alpine Ridge Trail | 2.6 mi | 103 | `[-151.164, 59.604]` → `[-151.108, 59.588]` |
-| Saddle Trail | 1.3 mi | 63 | `[-151.153, 59.609]` → `[-151.164, 59.601]` |
-| China Poot Lake Trail | 2.6 mi | 100 | `[-151.190, 59.536]` → `[-151.196, 59.560]` |
-| Grace Ridge Trail | 8.1 mi | 277 | `[-151.471, 59.501]` → `[-151.366, 59.443]` |
-| Sadie Knob Trail | 1.7 mi | 79 | `[-151.457, 59.513]` → `[-151.422, 59.525]` |
-| Coalition Loop Trail | 5.3 mi | 648 | `[-151.201, 59.559]` → `[-151.189, 59.548]` |
+| Grewingk Glacier Lake Trail | 3.1 mi | 123 | OpenStreetMap |
+| Alpine Ridge Trail | 2.6 mi | 103 | OpenStreetMap |
+| Saddle Trail | 1.3 mi | 63 | OpenStreetMap |
+| China Poot Lake Trail | 2.6 mi | 100 | OpenStreetMap |
+| Grace Ridge Trail | 8.1 mi | 277 | Approximate waypoints |
+| Sadie Knob Trail | 1.7 mi | 79 | OpenStreetMap |
+| Coalition Loop Trail | 5.3 mi | 648 | OpenStreetMap |
+| Emerald Lake Trail | 9.0 mi | 1176 | OpenStreetMap (lakeshore + ridge segments) |
+| Tutka Lake Trail | 1.6 mi | 201 | AllTrails KML (GPS recorded) |
+| Tutka Bay Lagoon Trail | 3.1 mi | 205 | AllTrails KML (GPS recorded) |
 
-### Water Taxi Routes (8)
+### Water Taxi Routes (9)
 
-| Route | Distance | Time (16-25 kts) | Serves Trail |
+| Route | Distance | Serves Trail | Shares Path With |
 |---|---|---|---|
-| Homer → Glacier Spit | 7.6 mi | 16-25 min | Grewingk Glacier Lake Trail |
-| Homer → Saddle Trailhead | 8.8 mi | 18-29 min | Grewingk Glacier Lake Trail |
-| Homer → Halibut Cove Lagoon | 10.7 mi | 22-35 min | China Poot Lake Trail |
-| Homer → China Poot | 7.1 mi | 15-23 min | China Poot Lake Trail |
-| Homer → Kayak Beach | 7.3 mi | 15-24 min | Grace Ridge Trail |
-| Homer → South Grace Ridge | 13.8 mi | 29-45 min | Grace Ridge Trail |
-| Homer → Bear Cove | 16.2 mi | 34-53 min | Bear Cove |
-| Homer → Sadie Knob | 8.2 mi | 17-27 min | Sadie Knob Trail |
+| Homer → Glacier Spit | 7.6 mi | Grewingk Glacier Lake Trail | — |
+| Homer → Saddle Trailhead | 8.8 mi | Grewingk Glacier Lake Trail | — |
+| Homer → Halibut Cove Lagoon | 10.7 mi | China Poot Lake Trail | — |
+| Homer → China Poot | 7.1 mi | China Poot Lake Trail | — |
+| Homer → Kayak Beach | 7.3 mi | Grace Ridge Trail | Base for SGR + Tutka |
+| Homer → South Grace Ridge | 13.8 mi | Grace Ridge Trail | Kayak Beach pts 0-6 |
+| Homer → Tutka Bay | 11.7 nm | Tutka Lake Trail | Kayak Beach pts 0-6, SGR pts 7-10 |
+| Homer → Bear Cove | 16.2 mi | Bear Cove | — |
+| Homer → Sadie Knob | 8.2 mi | Sadie Knob Trail | — |
 
-### Points (10)
+**Shared route convention:** Kayak Beach, South Grace Ridge, and Tutka Bay share the same initial departure path from Homer (points 0-6). South Grace Ridge and Tutka Bay continue together (points 7-10) before splitting to their destinations.
+
+### Points (12)
 
 | Name | Type | Coordinates |
 |---|---|---|
@@ -308,9 +323,11 @@ Colors are defined in TWO places that must stay in sync:
 | Kayak Beach Trailhead | trailhead | `[-151.4710, 59.5011]` |
 | South Grace Ridge Trailhead | trailhead | `[-151.3660, 59.4430]` |
 | Sadie Knob Trailhead | trailhead | `[-151.4574, 59.5135]` |
-| Grewingk Creek Tram | landmark | `[-151.1550, 59.6100]` |
+| Grewingk Creek Tram | landmark | `[-151.1497, 59.6320]` |
 | Bear Cove | reference_point | `[-151.0470, 59.7432]` |
 | China Poot | reference_point | `[-151.2418, 59.5513]` |
+| Emerald Lake Trailhead | trailhead | `[-151.1711, 59.6241]` |
+| Tutka Lake Trailhead | trailhead | `[-151.3836, 59.4326]` |
 
 ---
 
@@ -359,9 +376,9 @@ Colors are defined in TWO places that must stay in sync:
 - Large white text with heavy text-shadow
 - Fades in/out with CSS transitions
 
-### Controls Hint (`#controls-hint`)
-- Shows "Scroll to zoom / Drag to pan / Right-drag to rotate / Ctrl+drag to tilt"
-- Appears briefly after opening animation, then fades out after 5 seconds
+### Controls Legend (`#controls-legend`)
+- Persistent bottom-left box with keyboard-badge styled controls: Scroll (Zoom), Drag (Pan), Right-drag (Rotate), Ctrl+drag (Tilt)
+- Always visible on desktop; hidden on mobile (`display: none` at 768px breakpoint)
 
 ### Coordinate Popup
 - Clicking empty map area shows a popup with `lat, lng`
@@ -435,6 +452,8 @@ firebase deploy --only hosting:website
 
 The XNautical `firebase.json` uses `"target": "website"` with `"public": "website"`. The trail map lives in the `website/trails/` subdirectory.
 
+**IMPORTANT — `cleanUrls` and `<base>` tag:** Firebase hosting has `"cleanUrls": true`, which strips `.html` extensions. This means `/trails/index.html` is served at `/trails` (no trailing slash). Without a `<base href="/trails/">` tag in the HTML `<head>`, relative paths like `styles.css` resolve to `/styles.css` instead of `/trails/styles.css`, causing a white page. The `<base>` tag is required.
+
 ---
 
 ## Common Tasks (How-To)
@@ -502,6 +521,9 @@ Add a Point feature to `trails.geojson`:
 | Grace Ridge Trail | Approximate waypoints | 277 points, needs GPS validation |
 | Sadie Knob Trail | OpenStreetMap (way 271408767) | South segment only |
 | Coalition Loop Trail | OpenStreetMap (ways 1102790647 + 1102887819) | Two segments combined |
+| Emerald Lake Trail | OpenStreetMap (ways 215353065 + 215353063) | Lakeshore + ridge segments combined |
+| Tutka Lake Trail | AllTrails KML (GPS recorded) | First half of out-and-back, split at bay shore |
+| Tutka Bay Lagoon Trail | AllTrails KML (GPS recorded) | Second half of out-and-back, split at bay shore |
 | Water taxi routes | Manually traced | User-provided GPS waypoints for China Poot, South Grace Ridge; approximate for others |
 | Trail images | `/Users/jvoss/Documents/LuxuryHomerAdventures/Website/` | WebP format, all under 300KB |
 | Satellite imagery | MapTiler | API key required |
@@ -526,3 +548,5 @@ This searches for ways with matching names in the Kachemak Bay area bounding box
 7. **No offline support** — Requires internet for MapTiler tiles and MapLibre CDN.
 8. **Single GeoJSON source** — All data in one file. If it grows very large, consider splitting.
 9. **Browser caching** — After deploying updates, users may need hard refresh (Cmd+Shift+R). Firebase hosting has cache headers set.
+10. **Firebase `cleanUrls`** — The `<base href="/trails/">` tag in `index.html` is **required** for correct path resolution. Without it, `styles.css`, `app.js`, and `trails.geojson` fail to load because Firebase serves `/trails/index.html` at the URL `/trails` (no trailing slash).
+11. **Mobile GPU fallback** — `failIfMajorPerformanceCaveat: false` allows the map to render on low-end mobile GPUs. Terrain is wrapped in `try/catch` so the map degrades gracefully to 2D if 3D fails.
