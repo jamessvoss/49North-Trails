@@ -15,6 +15,15 @@
     <div class="logo">49North</div>
     <div class="header-actions">
       <button id="overview-btn" class="header-btn" title="Show all trails">All Trails</button>
+      <div class="layers-wrapper">
+        <button id="layers-btn" class="header-btn" title="Toggle map layers" aria-expanded="false">Layers ▾</button>
+        <div id="layers-dropdown" role="menu">
+          <label><input type="checkbox" data-cat="popular" checked> Popular Hiking Water Taxis</label>
+          <label><input type="checkbox" data-cat="other" checked> Other Water Taxi Routes</label>
+          <label><input type="checkbox" data-cat="yurt" checked> Yurt Water Taxis</label>
+          <label><input type="checkbox" data-cat="tour" checked> Bay Tours</label>
+        </div>
+      </div>
       <button id="tour-btn" class="header-btn tour">Take the Tour</button>
     </div>
   </div>

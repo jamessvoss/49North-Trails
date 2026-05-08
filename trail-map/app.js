@@ -840,3 +840,50 @@ function flyToOverview() {
 }
 
 document.getElementById('overview-btn').addEventListener('click', flyToOverview);
+
+// --- Layer Toggle Dropdown ---
+
+const layerVisibility = { popular: true, other: true, yurt: true, tour: true };
+
+function applyLayerVisibility() {
+  // Water taxi: filter by enabled categories
+  const enabledWtCats = ['popular', 'other', 'yurt'].filter(c => layerVisibility[c]);
+  const wtFilter = enabledWtCats.length === 0
+    ? ['==', ['get', '__never__'], '__none__']
+    : ['all',
+        ['==', ['get', 'type'], 'water-taxi'],
+        ['in', ['get', 'category'], ['literal', enabledWtCats]]
+      ];
+  ['water-taxi', 'water-taxi-labels'].forEach(id => {
+    if (map.getLayer(id)) map.setFilter(id, wtFilter);
+  });
+
+  // Tour: simple visibility toggle
+  const tourVis = layerVisibility.tour ? 'visible' : 'none';
+  ['tour-line', 'tour-labels'].forEach(id => {
+    if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', tourVis);
+  });
+}
+
+const layersBtn = document.getElementById('layers-btn');
+const layersDropdown = document.getElementById('layers-dropdown');
+
+layersBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const isOpen = layersDropdown.classList.toggle('open');
+  layersBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+});
+
+document.addEventListener('click', (e) => {
+  if (!layersDropdown.contains(e.target) && e.target !== layersBtn) {
+    layersDropdown.classList.remove('open');
+    layersBtn.setAttribute('aria-expanded', 'false');
+  }
+});
+
+layersDropdown.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    layerVisibility[cb.dataset.cat] = cb.checked;
+    applyLayerVisibility();
+  });
+});
