@@ -215,6 +215,44 @@ map.on('load', () => {
     }
   });
 
+  // Optional / tide-dependent tour segments (yellow dashed)
+  map.addLayer({
+    id: 'tour-optional-line',
+    type: 'line',
+    source: 'trails',
+    filter: ['==', ['get', 'type'], 'tour-optional'],
+    paint: {
+      'line-color': '#facc15',
+      'line-width': 3,
+      'line-opacity': 0.9,
+      'line-dasharray': [4, 3]
+    },
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round'
+    }
+  });
+
+  map.addLayer({
+    id: 'tour-optional-labels',
+    type: 'symbol',
+    source: 'trails',
+    filter: ['==', ['get', 'type'], 'tour-optional'],
+    layout: {
+      'symbol-placement': 'line-center',
+      'text-field': ['get', 'label'],
+      'text-size': 11,
+      'text-font': ['Noto Sans Bold'],
+      'text-offset': [0, -1],
+      'text-allow-overlap': false
+    },
+    paint: {
+      'text-color': '#fde047',
+      'text-halo-color': 'rgba(15, 23, 42, 0.9)',
+      'text-halo-width': 1.5
+    }
+  });
+
   // Water taxi labels (distance & time)
   map.addLayer({
     id: 'water-taxi-labels',
@@ -890,9 +928,9 @@ function applyLayerVisibility() {
     if (map.getLayer(id)) map.setFilter(id, wtFilter);
   });
 
-  // Tour: simple visibility toggle
+  // Tour: simple visibility toggle (covers main + optional segments)
   const tourVis = layerVisibility.tour ? 'visible' : 'none';
-  ['tour-line', 'tour-labels'].forEach(id => {
+  ['tour-line', 'tour-labels', 'tour-optional-line', 'tour-optional-labels'].forEach(id => {
     if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', tourVis);
   });
 }
