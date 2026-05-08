@@ -848,12 +848,15 @@ const layerVisibility = { popular: true, other: true, yurt: true, tour: true };
 function applyLayerVisibility() {
   // Water taxi: filter by enabled categories
   const enabledWtCats = ['popular', 'other', 'yurt'].filter(c => layerVisibility[c]);
-  const wtFilter = enabledWtCats.length === 0
-    ? ['==', ['get', '__never__'], '__none__']
-    : ['all',
-        ['==', ['get', 'type'], 'water-taxi'],
-        ['in', ['get', 'category'], ['literal', enabledWtCats]]
-      ];
+  let wtFilter;
+  if (enabledWtCats.length === 0) {
+    wtFilter = ['==', ['literal', 1], ['literal', 2]]; // always false
+  } else {
+    wtFilter = ['all',
+      ['==', ['get', 'type'], 'water-taxi'],
+      ['any', ...enabledWtCats.map(cat => ['==', ['get', 'category'], cat])]
+    ];
+  }
   ['water-taxi', 'water-taxi-labels'].forEach(id => {
     if (map.getLayer(id)) map.setFilter(id, wtFilter);
   });
