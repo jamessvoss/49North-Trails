@@ -259,6 +259,7 @@ map.on('load', () => {
         'Tutka Lake Trail', '#06b6d4',
         'Tutka Bay Lagoon Trail', '#84cc16',
         'Humpy Creek Trail', '#d946ef',
+        'Right Beach Trail', '#f59e0b',
         '#ffffff'
       ],
       'line-width': 4,
@@ -444,10 +445,19 @@ map.on('load', () => {
     }
   });
 
+  // Yurt clicks -> open Alaskan Yurt Rentals website
+  ['yurt-icons', 'yurt-labels'].forEach((layerId) => {
+    map.on('click', layerId, () => {
+      window.open('https://alaskanyurtrentals.com', '_blank', 'noopener,noreferrer');
+    });
+    map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
+  });
+
   // Click empty map area — show coordinates or deselect
   let coordPopup = null;
   map.on('click', (e) => {
-    const features = map.queryRenderedFeatures(e.point, { layers: ['trail-line'] });
+    const features = map.queryRenderedFeatures(e.point, { layers: ['trail-line', 'yurt-icons', 'yurt-labels'] });
     if (features.length === 0) {
       if (activeTrail) {
         deselectTrail();
