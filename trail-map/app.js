@@ -259,7 +259,7 @@ map.on('load', () => {
         'Tutka Lake Trail', '#06b6d4',
         'Tutka Bay Lagoon Trail', '#84cc16',
         'Humpy Creek Trail', '#d946ef',
-        'Right Beach Trail', '#f59e0b',
+        'Right Beach Trail', '#f43f5e',
         '#ffffff'
       ],
       'line-width': 4,
