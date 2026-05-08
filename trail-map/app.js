@@ -219,6 +219,7 @@ map.on('load', () => {
         'Emerald Lake Trail', '#eab308',
         'Tutka Lake Trail', '#06b6d4',
         'Tutka Bay Lagoon Trail', '#84cc16',
+        'Humpy Creek Trail', '#d946ef',
         '#ffffff'
       ],
       'line-width': 4,
