@@ -262,7 +262,7 @@ map.on('load', () => {
     id: 'trail-points',
     type: 'circle',
     source: 'trails',
-    filter: ['all', ['==', '$type', 'Point'], ['!=', ['get', 'type'], 'yurt']],
+    filter: ['all', ['==', ['geometry-type'], 'Point'], ['!=', ['get', 'type'], 'yurt']],
     paint: {
       'circle-radius': 5,
       'circle-color': '#ffffff',
@@ -276,7 +276,7 @@ map.on('load', () => {
     id: 'trail-labels',
     type: 'symbol',
     source: 'trails',
-    filter: ['all', ['==', '$type', 'Point'], ['!=', ['get', 'type'], 'yurt']],
+    filter: ['all', ['==', ['geometry-type'], 'Point'], ['!=', ['get', 'type'], 'yurt']],
     layout: {
       'text-field': ['get', 'name'],
       'text-size': 12,
