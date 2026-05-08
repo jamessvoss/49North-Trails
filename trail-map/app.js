@@ -301,7 +301,7 @@ map.on('load', () => {
     id: 'trail-points',
     type: 'circle',
     source: 'trails',
-    filter: ['all', ['==', ['geometry-type'], 'Point'], ['!=', ['get', 'type'], 'yurt']],
+    filter: ['all', ['==', ['geometry-type'], 'Point'], ['!=', ['get', 'type'], 'yurt'], ['!=', ['get', 'type'], 'advisory']],
     paint: {
       'circle-radius': 5,
       'circle-color': '#ffffff',
@@ -315,7 +315,7 @@ map.on('load', () => {
     id: 'trail-labels',
     type: 'symbol',
     source: 'trails',
-    filter: ['all', ['==', ['geometry-type'], 'Point'], ['!=', ['get', 'type'], 'yurt']],
+    filter: ['all', ['==', ['geometry-type'], 'Point'], ['!=', ['get', 'type'], 'yurt'], ['!=', ['get', 'type'], 'advisory']],
     layout: {
       'text-field': ['get', 'name'],
       'text-size': 12,
@@ -355,6 +355,26 @@ map.on('load', () => {
       'icon-size': 0.7,
       'icon-allow-overlap': true,
       'icon-anchor': 'bottom'
+    }
+  });
+
+  // Advisory labels (e.g., tidal warnings) — text-only, warning-yellow
+  map.addLayer({
+    id: 'advisory-labels',
+    type: 'symbol',
+    source: 'trails',
+    filter: ['==', ['get', 'type'], 'advisory'],
+    layout: {
+      'text-field': ['get', 'name'],
+      'text-size': 12,
+      'text-font': ['Open Sans Bold'],
+      'text-anchor': 'center',
+      'text-allow-overlap': true
+    },
+    paint: {
+      'text-color': '#fbbf24',
+      'text-halo-color': '#0f172a',
+      'text-halo-width': 2
     }
   });
 
