@@ -256,12 +256,12 @@ map.on('load', () => {
     }
   });
 
-  // Trail point markers
+  // Trail point markers (excludes yurts)
   map.addLayer({
     id: 'trail-points',
     type: 'circle',
     source: 'trails',
-    filter: ['==', '$type', 'Point'],
+    filter: ['all', ['==', '$type', 'Point'], ['!=', ['get', 'type'], 'yurt']],
     paint: {
       'circle-radius': 5,
       'circle-color': '#ffffff',
@@ -270,12 +270,12 @@ map.on('load', () => {
     }
   });
 
-  // Trail labels
+  // Trail labels (excludes yurts)
   map.addLayer({
     id: 'trail-labels',
     type: 'symbol',
     source: 'trails',
-    filter: ['==', '$type', 'Point'],
+    filter: ['all', ['==', '$type', 'Point'], ['!=', ['get', 'type'], 'yurt']],
     layout: {
       'text-field': ['get', 'name'],
       'text-size': 12,
@@ -286,6 +286,54 @@ map.on('load', () => {
     paint: {
       'text-color': '#ffffff',
       'text-halo-color': '#0f172a',
+      'text-halo-width': 1.5
+    }
+  });
+
+  // Yurt icon: custom SVG loaded as map image
+  const YURT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+    <ellipse cx="18" cy="32" rx="11" ry="2" fill="#000" opacity="0.4"/>
+    <rect x="8" y="20" width="20" height="11" fill="#fef3c7" stroke="#1e293b" stroke-width="1.5"/>
+    <path d="M5 20 L18 7 L31 20 Z" fill="#b45309" stroke="#1e293b" stroke-width="1.5" stroke-linejoin="round"/>
+    <rect x="15.5" y="24" width="5" height="7" fill="#1e293b"/>
+    <circle cx="18" cy="9.5" r="1.2" fill="#1e293b"/>
+  </svg>`;
+  const yurtImg = new Image(36, 36);
+  yurtImg.onload = () => {
+    if (!map.hasImage('yurt')) map.addImage('yurt', yurtImg);
+  };
+  yurtImg.src = 'data:image/svg+xml;base64,' + btoa(YURT_SVG);
+
+  // Yurt icons
+  map.addLayer({
+    id: 'yurt-icons',
+    type: 'symbol',
+    source: 'trails',
+    filter: ['==', ['get', 'type'], 'yurt'],
+    layout: {
+      'icon-image': 'yurt',
+      'icon-size': 0.7,
+      'icon-allow-overlap': true,
+      'icon-anchor': 'bottom'
+    }
+  });
+
+  // Yurt labels
+  map.addLayer({
+    id: 'yurt-labels',
+    type: 'symbol',
+    source: 'trails',
+    filter: ['==', ['get', 'type'], 'yurt'],
+    layout: {
+      'text-field': ['concat', ['get', 'name'], ' Yurt'],
+      'text-size': 11,
+      'text-offset': [0, 0.6],
+      'text-anchor': 'top',
+      'text-font': ['Open Sans Bold']
+    },
+    paint: {
+      'text-color': '#fef3c7',
+      'text-halo-color': '#451a03',
       'text-halo-width': 1.5
     }
   });
