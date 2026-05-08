@@ -176,6 +176,45 @@ map.on('load', () => {
     }
   });
 
+  // Tour routes (dashed coral line, drawn under hiking trails like water taxi)
+  map.addLayer({
+    id: 'tour-line',
+    type: 'line',
+    source: 'trails',
+    filter: ['==', ['get', 'type'], 'tour'],
+    paint: {
+      'line-color': '#fb7185',
+      'line-width': 3,
+      'line-opacity': 0.85,
+      'line-dasharray': [4, 3]
+    },
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round'
+    }
+  });
+
+  // Tour labels
+  map.addLayer({
+    id: 'tour-labels',
+    type: 'symbol',
+    source: 'trails',
+    filter: ['==', ['get', 'type'], 'tour'],
+    layout: {
+      'symbol-placement': 'line-center',
+      'text-field': ['get', 'label'],
+      'text-size': 12,
+      'text-font': ['Noto Sans Bold'],
+      'text-offset': [0, -1],
+      'text-allow-overlap': false
+    },
+    paint: {
+      'text-color': '#fda4af',
+      'text-halo-color': 'rgba(15, 23, 42, 0.9)',
+      'text-halo-width': 1.5
+    }
+  });
+
   // Water taxi labels (distance & time)
   map.addLayer({
     id: 'water-taxi-labels',
