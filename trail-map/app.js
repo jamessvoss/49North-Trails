@@ -341,7 +341,7 @@ map.on('load', () => {
     id: 'trail-points',
     type: 'circle',
     source: 'trails',
-    filter: ['all', ['==', ['geometry-type'], 'Point'], ['!=', ['get', 'type'], 'yurt'], ['!=', ['get', 'type'], 'advisory'], ['!=', ['get', 'type'], 'place']],
+    filter: ['all', ['==', ['geometry-type'], 'Point'], ['!=', ['get', 'type'], 'yurt'], ['!=', ['get', 'type'], 'advisory'], ['!=', ['get', 'type'], 'place'], ['!=', ['get', 'type'], 'tour_point']],
     paint: {
       'circle-radius': 5,
       'circle-color': '#ffffff',
@@ -355,7 +355,7 @@ map.on('load', () => {
     id: 'trail-labels',
     type: 'symbol',
     source: 'trails',
-    filter: ['all', ['==', ['geometry-type'], 'Point'], ['!=', ['get', 'type'], 'yurt'], ['!=', ['get', 'type'], 'advisory'], ['!=', ['get', 'type'], 'place']],
+    filter: ['all', ['==', ['geometry-type'], 'Point'], ['!=', ['get', 'type'], 'yurt'], ['!=', ['get', 'type'], 'advisory'], ['!=', ['get', 'type'], 'place'], ['!=', ['get', 'type'], 'tour_point']],
     layout: {
       'text-field': ['get', 'name'],
       'text-size': 12,
@@ -398,7 +398,43 @@ map.on('load', () => {
     }
   });
 
-  // Place labels (Gull Island, Seal Beach, Halibut Cove) — italic-ish region/landmark text
+  // Tour points (e.g., Seal Beach for Bay Area Tour) — normal circle + label, zoom-gated
+  map.addLayer({
+    id: 'tour-point-circles',
+    type: 'circle',
+    source: 'trails',
+    filter: ['==', ['get', 'type'], 'tour_point'],
+    minzoom: 13,
+    paint: {
+      'circle-radius': 5,
+      'circle-color': '#ffffff',
+      'circle-stroke-color': '#0f172a',
+      'circle-stroke-width': 2
+    }
+  });
+
+  map.addLayer({
+    id: 'tour-point-labels',
+    type: 'symbol',
+    source: 'trails',
+    filter: ['==', ['get', 'type'], 'tour_point'],
+    minzoom: 13,
+    layout: {
+      'text-field': ['get', 'name'],
+      'text-size': 12,
+      'text-offset': [0, 1.5],
+      'text-anchor': 'top',
+      'text-font': ['Open Sans Bold'],
+      'text-allow-overlap': false
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': '#0f172a',
+      'text-halo-width': 1.5
+    }
+  });
+
+  // Place labels (Gull Island, Halibut Cove) — italic-ish region/landmark text
   map.addLayer({
     id: 'place-labels',
     type: 'symbol',
