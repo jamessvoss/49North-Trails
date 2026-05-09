@@ -293,6 +293,7 @@ map.on('load', () => {
         'Saddle Trail', '#a855f7',
         'Sadie Knob Trail South', '#ec4899',
         'Sadie Knob Trail North', '#f472b6',
+        'Sadie Knob Spur Trail', '#db2777',
         'Coalition Loop Trail', '#14b8a6',
         'Emerald Lake Trail', '#eab308',
         'Tutka Lake Trail', '#06b6d4',
