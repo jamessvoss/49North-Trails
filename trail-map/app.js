@@ -434,7 +434,8 @@ map.on('load', () => {
     }
   });
 
-  // Place labels (Gull Island, Halibut Cove) — italic-ish region/landmark text
+  // Place labels (Gull Island, Halibut Cove) — zoom-dependent text size so a small
+  // islet label doesn't swallow the entire island at low zoom
   map.addLayer({
     id: 'place-labels',
     type: 'symbol',
@@ -442,7 +443,11 @@ map.on('load', () => {
     filter: ['==', ['get', 'type'], 'place'],
     layout: {
       'text-field': ['get', 'name'],
-      'text-size': 14,
+      'text-size': ['interpolate', ['linear'], ['zoom'],
+        10, 8,
+        12, 11,
+        14, 14
+      ],
       'text-font': ['Open Sans Bold'],
       'text-anchor': 'center',
       'text-allow-overlap': false,
