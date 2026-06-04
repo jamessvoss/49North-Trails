@@ -296,6 +296,7 @@ map.on('load', () => {
         'Sadie Knob Spur Trail', '#db2777',
         'Coalition Loop Trail', '#14b8a6',
         'Grewingk Creek Tram Trail', '#eab308',
+        'Emerald Lake Loop Trail', '#10b981',
         'Tutka Lake Trail', '#06b6d4',
         'Tutka Bay Lagoon Trail', '#84cc16',
         'Humpy Creek Trail', '#d946ef',
